@@ -1,7 +1,7 @@
 from databases import Database
 
 
-database = Database("sqlite+aiosqlite:///bot.db")
+database = Database("sqlite:///bot.db")
 
 
 async def create_table(database):
