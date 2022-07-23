@@ -13,4 +13,3 @@ async def run():
                                 text text NOT NULL
                                 );"""
     )
-    await database.disconnect()
