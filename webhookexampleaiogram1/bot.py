@@ -18,13 +18,16 @@ dp = Dispatcher(bot)
 async def on_startup(dispatcher):
     await bot.set_webhook(WEBHOOK_URL, drop_pending_updates=True)
     await database.connect()
-    await database.execute(
-        """CREATE TABLE messages (
-            id SERIAL PRIMARY KEY,
-            telegram_id INTEGER NOT NULL,
-            text text NOT NULL
-            );"""
-    )
+    try:
+        await database.execute(
+            """CREATE TABLE messages (
+                id SERIAL PRIMARY KEY,
+                telegram_id INTEGER NOT NULL,
+                text text NOT NULL
+                );"""
+        )
+    except:
+        print("already exist")
 
 
 async def on_shutdown(dispatcher):
