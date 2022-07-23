@@ -6,8 +6,13 @@ from aiogram.utils.executor import start_webhook
 from aiogram import Bot, types
 
 from config import *
-from db import *
-import asyncio
+
+# from db import *
+# import asyncio
+from databases import Database
+
+database = Database("sqlite:///bot.db")
+
 
 bot = Bot(token=TOKEN)
 dp = Dispatcher(bot)
@@ -15,10 +20,19 @@ dp = Dispatcher(bot)
 
 async def on_startup(dispatcher):
     await bot.set_webhook(WEBHOOK_URL, drop_pending_updates=True)
+    await database.connect()
+    await database.execute(
+        """CREATE TABLE messages (
+                            id INTEGER PRIMARY KEY AUTOINCREMENT,
+                            telegram_id INTEGER NOT NULL,
+                            text text NOT NULL
+                            );"""
+    )
 
 
 async def on_shutdown(dispatcher):
     await bot.delete_webhook()
+    await database.disconnect()
 
 
 async def save(user_id, text):
@@ -45,8 +59,8 @@ async def echo(message: types.Message):
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(run())
+    #    loop = asyncio.get_event_loop()
+    #    loop.run_until_complete(run())
     start_webhook(
         dispatcher=dp,
         webhook_path=WEBHOOK_PATH,
